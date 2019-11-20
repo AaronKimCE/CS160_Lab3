@@ -2,7 +2,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <sys/time.h>
+#include <time.h>
 
 void *MatrixMult (void* vargp) {
   int *elem = (int *)vargp;
@@ -57,8 +57,7 @@ int main() {
   pthread_t *threads;
   threads = (pthread_t*)malloc(25*sizeof(pthread_t));
   
-  struct timeval start, stop;
-  gettimeofday(&start, NULL);
+  clock_t start = clock();
 
   int cnt = 0;
   int* array = NULL;
@@ -77,6 +76,8 @@ int main() {
        pthread_create(&threads[cnt++], NULL, MatrixMult, (void*)array);
     }
   }
+  
+  clock_t stop = clock();
  
   printf("\nEquals\n\n");
   for (i = 0; i < 25; i++) { //Joining all threads
@@ -89,10 +90,10 @@ int main() {
     }
   }
   
-  gettimeofday(&stop, NULL);
+  
 
-  long duration = (stop.tv_sec - start.tv_sec);
-  long micro = ((duration * 1000000) + stop.tv_usec) - (start.tv_usec);
-  printf("Runtime: %d seconds and %d us\n", duration, micro);
+  double duration = 0;
+  duration += (double)(stop - start);
+  printf("Runtime: %d ticks\n", duration);
   return 0; 
 }
